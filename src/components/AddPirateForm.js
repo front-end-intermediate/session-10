@@ -22,7 +22,7 @@ class AddPirateForm extends Component {
       weapon: this.weapon.value,
     }
     this.props.addPirate(pirate);
-    this.pirateForm.reset()
+    this.pirateForm.reset();
   }
 
 

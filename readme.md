@@ -914,5 +914,417 @@ We will need to pass state to this component as well:
 
 ## Notes
 
-`<React.Fragment>`
+`src/api.js`:
+
+```js
+import axios from 'axios';
+
+export default {getPirates: function(){
+    var uri = 'http://localhost:3005/api/pirates';
+
+    return axios.get(uri)
+    .then(function(response){
+      return response.data;
+    })
+  }
+}
+```
+
+`import api from '../utils/api';`
+
+```js
+  componentDidMount(){
+    this.setState({ isLoading: true });
+    api.getPirates()
+    .then(pirates => this.setState({
+      pirates: pirates,
+      isLoading: false
+    }))
+    .catch(error => this.setState({
+      error,
+      isLoading: false
+    }));
+  }
+```
+
+```js
+import axios from 'axios';
+
+var uri = 'http://localhost:3005/api/pirates';
+
+export function getPirates (){
+    return axios.get(uri)
+    .then(function(response){
+      return response.data;
+    })
+  }
+```
+
+`import {getPirates} from '../utils/api';`
+
+```js
+  componentDidMount(){
+    this.setState({ isLoading: true });
+    getPirates()
+    .then(pirates => this.setState({
+      pirates: pirates,
+      isLoading: false
+    }))
+    .catch(error => this.setState({
+      error,
+      isLoading: false
+    }));
+  }
+```
+
+```js
+import axios from 'axios';
+
+var uri = 'http://localhost:3005/api/pirates';
+
+export function getPirates (){
+  return axios.get(uri)
+  .then(function(response){
+    return response.data;
+  })
+}
+
+export function deletePirate (pirate){
+  return axios.get(`{uri}{pirate}`)
+  .then(function(response){
+    return response.data
+  })
+}
+
+export function newPirate (pirate){
+  return axios.post(`{uri}{pirate}`)
+  .then(function(response){
+    return response.data
+  })
+}
+```
+
+```js
+import {getPirates, deletePirate, newPirate} from '../utils/api';
+...
+  
+componentDidMount(){
+  this.setState({ isLoading: true });
+  getPirates()
+  .then(pirates => this.setState({
+    pirates: pirates,
+    isLoading: false
+  }))
+  .catch(error => this.setState({
+    error,
+    isLoading: false
+  }));
+}
+...
+removePirate(key){
+  const pirates = { ...this.state.pirates }
+  let pirateDel = this.state.pirates[key]._id
+  deletePirate(pirateDel)
+  .then(delete pirates[key])
+  .then(this.setState({pirates: pirates}))
+  return
+}
+...
+addPirate(pirate) {
+  const pirates = { ...this.state.pirates }
+  newPirate()
+  .then ( pirates[pirate] = pirate )
+  .then(this.setState({ pirates: pirates }))
+}
+...
+```
+
+## Routes
+
+```js
+import React from 'react';
+import {NavLink} from 'react-router-dom';
+import '../assets/css/nav.css'
+
+function Nav(){
+  return (
+    <ul className="nav">
+      <li>
+        <NavLink exact to='/'>Home</NavLink>
+      </li>
+      <li>
+        <NavLink to='/add'>Add Pirate</NavLink>
+      </li>
+      <li>
+        <NavLink to='/pirates'>Pirates</NavLink>
+      </li>
+    </ul>
+  )
+}
+
+export default Nav
+```
+
+```css
+.nav {
+  display: flex;
+  list-style: none;
+  background: #007eb6;
+  padding: 0.5rem;
+  margin: 0;
+  border: 4px solid #007eb6;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.nav a.active {
+  color: #007eb6;
+  background: #fff;
+}
+```
+
+```js
+`npm install --save react-router-dom`
+```
+
+`Index.js`:
+
+```js
+import { BrowserRouter } from 'react-router-dom'
+...
+ReactDOM.render((
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+), document.getElementById('root'))
+```
+
+App:
+
+```js
+import React, { Component } from 'react';
+import Pirate from './Pirate'
+import Header from './Header';
+import Nav from './Nav';
+import PirateForm from './PirateForm';
+import {getPirates, deletePirate, newPirate} from '../api';
+
+import { Switch, Route } from 'react-router-dom';
+
+class App extends Component {
+  
+  render(){
+    return(
+      <Route>
+        <React.Fragment>
+        <Header />
+        <Nav />
+        </React.Fragment>
+      </Route>
+    )
+  }
+}
+
+export default App;
+
+```
+
+```js
+class App extends Component {
+  
+  render(){
+    return(
+      <Route>
+        <React.Fragment>
+        <Header headline='Pirates!' />
+        <Nav />
+        <Route path='/' component={Home} />
+        <Route path='/add' component={AddPirateForm} />
+        </React.Fragment>
+      </Route>
+    )
+  }
+}
+
+export default App;
+```
+
+Home
+
+```js
+import React from 'react';
+
+const Home = () => {
+  return (
+    <div className="home">
+      <h1>Home</h1>
+    </div>
+    )
+  }
+  
+export default Home;
+```
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Home = () => {
+  return (
+    <div className="home">
+      <h1>Home</h1>
+      <Link to='/pirates'>See em All</Link>
+    </div>
+    )
+  }
+  
+export default Home;
+```
+
+```js
+import React, { Component } from 'react';
+import Home from './Home';
+import Pirate from './Pirate'
+import Header from './Header';
+import Nav from './Nav';
+import AddPirateForm from './AddPirateForm';
+import {getPirates, deletePirate, newPirate} from '../api';
+
+import { Switch, Route } from 'react-router-dom';
+
+class App extends Component {
+  
+  render(){
+    return(
+      <Route>
+        <React.Fragment>
+        <Header headline='Pirates!' />
+        <Nav />
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route path='/add' component={AddPirateForm} />
+          <Route path='/pirates' component={Pirate} />
+          <Route render={function(){
+            return <h2>Not found</h2>
+          }} />
+        </Switch>
+        </React.Fragment>
+      </Route>
+    )
+  }
+}
+
+export default App;
+
+```
+
+App
+
+```js
+import React, { Component } from 'react';
+import Home from './Home';
+import Pirate from './Pirate'
+import Header from './Header';
+import Nav from './Nav';
+import AddPirateForm from './AddPirateForm';
+import {getPirates, deletePirate, newPirate} from '../api';
+
+import { Switch, Route } from 'react-router-dom';
+
+class App extends Component {
+
+  constructor() {
+    super();
+    this.addPirate = this.addPirate.bind(this);
+    this.removePirate = this.removePirate.bind(this);
+    this.state = {
+      pirates: {},
+      isLoading: true,
+      error: null
+    }
+  }
+
+  componentDidMount(){
+    this.setState({ isLoading: true });
+    getPirates()
+    .then(pirates => this.setState({
+      pirates: pirates,
+      isLoading: false
+    }))
+    .catch(error => this.setState({
+      error,
+      isLoading: false
+    }));
+  }
+  
+  render(){
+
+    const { isLoading, error } = this.state;
+    
+    if (error) {
+      return <p>{error.message}</p>;
+    }
+    
+    if (isLoading) {
+      return <p>Loading ...</p>;
+    }
+
+    return(
+      <Route>
+        <React.Fragment>
+        <Header headline='Pirates!' />
+        <Nav />
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route path='/add' component={AddPirateForm} />
+          <Route path='/pirates' component={Pirate} />
+          <Route render={function(){
+            return <h2>Not found</h2>
+          }} />
+        </Switch>
+        </React.Fragment>
+      </Route>
+    )
+  }
+
+  removePirate(key){
+    const pirates = { ...this.state.pirates }
+    let pirateDel = this.state.pirates[key]._id
+    deletePirate(pirateDel)
+    .then(delete pirates[key])
+    .then(this.setState({pirates: pirates}))
+    return
+  }
+  
+  addPirate(pirate) {
+    const pirates = { ...this.state.pirates }
+    newPirate()
+    .then ( pirates[pirate] = pirate )
+    .then(this.setState({ pirates: pirates }))
+  }
+}
+
+export default App;
+
+```
+
+Instead of using component, use the render prop. render accepts a functional component and that function won’t get unnecessarily remounted like with component. That function will also receive all the same props that component would receive. So you can take those and pass those along to the rendered component.
+
+```js
+<Switch>
+  <Route exact path='/' component={Home} />
+  <Route 
+    path='/add'
+    render={ (props) => <AddPirateForm {...props} />}
+  />  
+  <Route path='/pirates' component={Pirate} />
+  <Route render={function(){
+    return <h2>Not found</h2>
+  }} />
+</Switch>
+```
 
