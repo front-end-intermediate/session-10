@@ -17,7 +17,7 @@ export function deletePirate (pirate){
 }
 
 export function newPirate (pirate){
-  return axios.post(`${uri}${pirate}`)
+  return axios.post(uri)
   .then(function(response){
     return response.data
   })
