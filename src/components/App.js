@@ -57,7 +57,9 @@ class App extends Component {
             path='/add'
             render={ (props) => <AddPirateForm {...props}  addPirate={this.addPirate} />}
           />
-          <Route path='/pirates' component={Pirate} />
+          <Route 
+            path='/pirates' 
+            render={ (props) => <Pirate {...props} details={this.state.pirates} /> } />
           <Route render={function(){
             return <h2>Not found</h2>
           }} />
@@ -75,14 +77,15 @@ class App extends Component {
     .then(this.setState({pirates: pirates}))
     return
   }
-  
+
   addPirate(pirate) {
     const pirates = { ...this.state.pirates }
     newPirate(pirate)
     .then ( pirates[pirate] = pirate )
-    // .then(this.setState({ pirates: pirates }))
-    .then(response => console.log(response.data))
+    .then(this.setState({ pirates: pirates }))
   }
+  
+
 }
 
 export default App;

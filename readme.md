@@ -1328,3 +1328,24 @@ Instead of using component, use the render prop. render accepts a functional com
 </Switch>
 ```
 
+```js
+<Route>
+  <React.Fragment>
+  <Header headline='Pirates!' />
+  <Nav />
+  <Switch>
+    <Route exact path='/' component={Home} />
+    <Route 
+      path='/add'
+      render={ (props) => <AddPirateForm {...props}  addPirate={this.addPirate} />}
+    />
+    <Route 
+      path='/pirates' 
+      render={ (props) => <Pirate {...props} details={this.state.pirates} /> } />
+    <Route render={function(){
+      return <h2>Not found</h2>
+    }} />
+  </Switch>
+  </React.Fragment>
+</Route>
+```

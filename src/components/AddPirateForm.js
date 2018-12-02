@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import '../assets/css/AddPirateForm.css';
 
+// import axios from 'axios';
+
 class AddPirateForm extends Component {
+
   render(){
     return (
       <form ref={ (input)=>this.pirateForm = input } onSubmit={ (e) => this.createPirate(e) }>
@@ -24,7 +27,6 @@ class AddPirateForm extends Component {
     this.props.addPirate(pirate);
     this.pirateForm.reset();
   }
-
 
 }
 
