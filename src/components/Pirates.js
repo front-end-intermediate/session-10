@@ -5,16 +5,16 @@ import '../assets/css/Pirate.css';
 class Pirate extends Component {
   
   render(){
-    // const { details } = this.props.details;
+    {console.log(this.props.details)}
     return (
       <ul>
       {
-        // this.props.details &&
-        this.props.details.map( p => (
+
+        this.props.details.map( (pirate, index) => (
           
-          <li key={p._id}>
-          <Link to={`pirates/${p._id}`}>{p.name}</Link>
-          <button onClick={() => this.props.removePirate(p._id)}>✖︎</button>
+          <li key={index}>
+          <Link to={`pirates/${pirate._id}`}>{pirate.name}: {index}</Link>
+          <button onClick={() => this.props.removePirate(index)}>✖︎</button>
           </li>
           ))
           

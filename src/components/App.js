@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-// import Pirate from './Pirate';
+import {getPirates, deletePirate, newPirate} from '../utils/api';
+import Nav from './Nav';
 import Header from './Header';
 import PirateForm from './PirateForm'
 import { Switch, Route } from 'react-router-dom';
 import Pirates from './Pirates';
 import PirateDetail from './PirateDetail';
-
-import axios from 'axios';
 
 class App extends Component {
   
@@ -23,9 +22,9 @@ class App extends Component {
   
   componentDidMount(){
     this.setState({ isLoading: true });
-    axios.get('http://localhost:3005/api/pirates')
-    .then(response => this.setState({
-      pirates: response.data,
+    getPirates()
+    .then(pirates => this.setState({
+      pirates: pirates,
       isLoading: false
     }))
     .catch(error => this.setState({
@@ -49,7 +48,7 @@ class App extends Component {
     return (
       <div className="App">
       <Header headline="Pirates!" />
-      
+      <Nav />
       <Switch>
         <Route exact path='/' render={(props) => (
           <React.Fragment>
@@ -70,17 +69,19 @@ class App extends Component {
         }
         
         removePirate(key){
-          console.log(key)
+          // console.log(key)
           const pirates = { ...this.state.pirates }
           let pirateDel = this.state.pirates[key]._id
-          // axios.get(`http://localhost:3005/api/pirates/${pirateDel}`)
-          // .then(delete pirates[key])
-          // .then(this.setState({pirates}))
+
+          deletePirate(pirateDel)
+          .then(delete pirates[key])
+          .then(this.setState({pirates: pirates}))
+          return
         }
         
         addPirate(pirate) {
           const pirates = { ...this.state.pirates }
-          axios.post('http://localhost:3005/api/pirates/', pirate)
+          newPirate()
           .then ( pirates[pirate] = pirate )
           .then(this.setState({ pirates: pirates }))
         }

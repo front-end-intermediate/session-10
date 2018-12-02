@@ -1,0 +1,15 @@
+.nav {
+  display: flex;
+  list-style: none;
+}
+
+.nav a {
+  color: #007eb6;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.nav a.active {
+  color: #fff;
+  background: #007eb6;
+}
