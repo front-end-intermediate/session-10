@@ -9,7 +9,7 @@ function Nav(){
         <NavLink exact to='/'>Home</NavLink>
       </li>
       <li>
-        <NavLink to='/add'>Add Pirate</NavLink>
+        <NavLink to='/add'>About Pirates</NavLink>
       </li>
       <li>
         <NavLink to='/pirates'>Pirates</NavLink>

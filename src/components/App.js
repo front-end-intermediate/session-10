@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
-import Pirate from './Pirate'
+import Pirates from './Pirates';
+import PirateDetail from './PirateDetail';
+
 import Header from './Header'
-import PirateForm from './PirateForm'
+import Home from './Home';
+
+// import PirateForm from './PirateForm';
+import Nav from './Nav';
+
+import { Route, Switch } from 'react-router-dom'
 import axios from 'axios';
 
 class App extends Component {
@@ -47,40 +54,50 @@ class App extends Component {
         ) 
       }
       
-      return (
-        <div className="App">
-        <Header headline="Pirates!" />
+      return(
+        <Route>
+        <React.Fragment>
+        <Header headline='Pirates!' />
+        <Nav />
+        <Switch>
+        <Route exact path='/' component={Home} />
         
-        {
-          Object.keys(this.state.pirates)
-          .map(key =>
-            <Pirate key={key}
-            index={key}
-            details={this.state.pirates[key]}
-            removePirate={this.removePirate} />)
-          }
-          
-          <PirateForm addPirate={this.addPirate} />
-          </div>
-          );
-        }
+        {/* <Route exact path='/pirates' component={Pirates} /> */}
         
+        <Route exact path='/pirates' render={(props) => (
+          <Pirates {...props} details={this.state.pirates}  />
+          )
+        } />
         
-        removePirate(key){
-          const pirates = { ...this.state.pirates }
-          let pirateDel = this.state.pirates[key]._id
-          axios.get(`http://localhost:3005/api/pirates/${pirateDel}`)
-          .then(delete pirates[key])
-          .then(this.setState({pirates}))
-        }
+        <Route path='/pirates/:number' render={(props) => (
+          <PirateDetail {...props} details={this.state.pirates} />
+          )
+        } />
         
-        addPirate(pirate) {
-          const pirates = { ...this.state.pirates }
-          axios.post('http://localhost:3005/api/pirates/', pirate)
-          .then ( pirates[pirate] = pirate )
-          .then(this.setState({ pirates: pirates }))
-        }
+        </Switch>
+        </React.Fragment>
+        </Route>
+        )
+        
         
       }
       
-      export default App;
+      
+      removePirate(key){
+        const pirates = { ...this.state.pirates }
+        let pirateDel = this.state.pirates[key]._id
+        axios.get(`http://localhost:3005/api/pirates/${pirateDel}`)
+        .then(delete pirates[key])
+        .then(this.setState({pirates}))
+      }
+      
+      addPirate(pirate) {
+        const pirates = { ...this.state.pirates }
+        axios.post('http://localhost:3005/api/pirates/', pirate)
+        .then ( pirates[pirate] = pirate )
+        .then(this.setState({ pirates: pirates }))
+      }
+      
+    }
+    
+    export default App;

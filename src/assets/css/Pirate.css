@@ -4,10 +4,9 @@
 
 .pirate ul {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   list-style: none;
 }
-
 .pirate ul li {
   flex: 1;
 }

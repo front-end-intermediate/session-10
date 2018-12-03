@@ -324,10 +324,12 @@ ReactDOM.render((
 
 ## Main Routes
 
+Nav.js:
+
 ```js
 import React from 'react';
 import {NavLink} from 'react-router-dom';
-import '../assets/css/Nav.css'
+// import '../assets/css/Nav.css'
 
 function Nav(){
   return (
@@ -336,7 +338,7 @@ function Nav(){
         <NavLink exact to='/'>Home</NavLink>
       </li>
       <li>
-        <NavLink to='/add'>Add Pirate</NavLink>
+        <NavLink to='/add'>About Pirates</NavLink>
       </li>
       <li>
         <NavLink to='/pirates'>Pirates</NavLink>
@@ -348,7 +350,93 @@ function Nav(){
 export default Nav
 ```
 
-Looking at the structure of components, it appears that we will have to use `App` as a branching point for our route.
+Import to App.js and add it below the header in the render method.
+
+Add Nav.css
+
+```css
+.nav {
+  display: flex;
+  list-style: none;
+  background: #007eb6;
+  padding: 0.5rem;
+  margin: 0;
+  border: 4px solid #007eb6;
+  font-family: 'Trade Winds', cursive;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.nav a.active {
+  color: #007eb6;
+  background: #fff;
+}
+```
+
+Home.js
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Home = () => {
+  return (
+    <div className="home">
+      <h1>Home</h1>
+      <Link to='/pirates'>See em All</Link>
+    </div>
+    )
+  }
+  
+export default Home;
+```
+
+Import Home into App.js.
+
+ App.js
+
+ ```js
+return(
+  <Route>
+    <React.Fragment>
+    <Header headline='Pirates!' />
+    <Nav />
+    <Switch>
+      <Route exact path='/' component={Home} />
+    </Switch>
+    </React.Fragment>
+  </Route>
+)
+```
+
+ <!-- ```js
+ return(
+    <Route>
+      <React.Fragment>
+      <Header headline='Pirates!' />
+      <Nav />
+      <Switch>
+        <Route exact path='/' component={Home} />
+        <Route 
+          path='/add'
+          render={ (props) => <AddPirateForm {...props}  addPirate={this.addPirate} />}
+        />
+        <Route 
+          path='/pirates' 
+          render={ (props) => <Pirates {...props} details={this.state.pirates} /> } />
+        <Route render={function(){
+          return <h2>Not found</h2>
+        }} />
+      </Switch>
+      </React.Fragment>
+    </Route>
+  )
+}
+``` -->
 
 `App.js`:
 
@@ -357,20 +445,19 @@ import { Switch, Route } from 'react-router-dom';
 import Pirates from './components/Pirates';
 import PirateDetail from './components/PirateDetail';
 ...
-    return (
-      <div className="App">
-        <Header headline="Pirates!" />
-    
-        <Switch>
-          <Route exact path='/' component={Pirates} />
-    
-          <Route path='/pirates/:number' component={PirateDetail} />
-        </Switch>
-    
-        <PirateForm addPirate={this.addPirate} />
-      </div>
-    );
-  }
+return(
+  <Route>
+    <React.Fragment>
+    <Header headline='Pirates!' />
+    <Nav />
+    <Switch>
+    <Route exact path='/' component={Home} />
+    <Route exact path='/pirates' component={Pirates} />
+    <Route path='/pirates/:number' component={PirateDetail} />
+  </Switch>
+    </React.Fragment>
+  </Route>
+)
 ```
 
 We need to create a `PirateDetail` and a `Pirates` component. We will no longer be using the `Pirate` component.
@@ -399,7 +486,7 @@ class Pirate extends Component {
     return (
       <div className='pirate'>
       <ul>
-        <li><Link to={`pirates/10`}>Pirate</Link></li>
+        <li><Link to={`pirates/10`}>Pirates</Link></li>
         </ul>
       </div>
       )
@@ -413,19 +500,7 @@ Edit `PirateDetail` to include a Link back to home.
 `PirateDetail.js`:
 
 ```js
-import React from 'react'
-import { Link } from 'react-router-dom'
-
-const PirateDetail = (props) => (
-  <div className='pirate'>
-  <ul>
-    <li>Pirate Detail</li>
-  </ul>
-  <Link to='/'>Back</Link>
-  </div>
-)
-
-export default PirateDetail
+<Link to='/pirates'>Back</Link>
 ```
 
 For this example we are going to use a different [method for rendering the component](https://reacttraining.com/react-router/web/api/Route). In the previous exercise we used the `<Route component>` method: `<Route exact path='/pirates' component={AllPirates}/>` Here we will use the `<Route render>` method. This will allow us to pass in additional props on top of the Route props (match, location, history).
@@ -434,20 +509,11 @@ We will use the `render` route to pass state to Pirates:
 
 ```js
 return (
-  <div className="App">
-    <Header headline="Pirates!" />
 
-    <Switch>
-      <Route exact path='/' render={(props) => (
-      <Pirates {...props} details={this.state.pirates}  />
-      )} />
+<Route exact path='/pirates' render={(props) => (
+  <Pirates {...props} details={this.state.pirates}  />
+)} />
 
-      <Route path='/pirates/:number' component={PirateDetail} />
-    </Switch>
-
-    <PirateForm addPirate={this.addPirate} />
-  </div>
-);
 ```
 
 Use the React inspector to examine the Pirate component. Note that it has access to a details prop in addition to the routing props.
@@ -524,18 +590,42 @@ const pirate = props.details.filter(
   export default PirateDetail
 ```
 
-We will need to pass state to this component as well:
+We will need to pass state to this component as well.
+
+App.js:
 
 ```js
-<Switch>
-  <Route exact path='/' render={(props) => (
+<Route exact path='/pirates' render={(props) => (
   <Pirates {...props} details={this.state.pirates}  />
-  )} />
+  )
+} />
 
-  <Route path='/pirates/:number' render={(props) => (
-    <PirateDetail {...props} details={this.state.pirates} />
-  )} />
-</Switch>
+<Route path='/pirates/:number' render={(props) => (
+  <PirateDetail {...props} details={this.state.pirates} />
+  )
+} />
+```
+
+Inspect the `PirateDetail` component using React's tools.
+
+Now we will display the details.
+
+Recall the method used in the previous (non routing) version of Pirate.js:
+
+```js
+render(){
+    const { details } = this.props;
+    return (
+      <div className='pirate'>
+      <ul>
+        <li>{details.name}</li>
+        <li>{details.weapon}</li>
+        <li>{details.vessel}</li>
+        <li><button onClick={() => this.props.removePirate(this.props.index)}>✖︎</button></li>
+      </ul>
+      </div>
+      )
+    }
 ```
 
 ## Notes
