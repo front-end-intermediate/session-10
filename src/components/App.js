@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Home from './Home';
-import Pirate from './Pirate'
+import Pirates from './Pirates'
 import Header from './Header';
 import Nav from './Nav';
 import AddPirateForm from './AddPirateForm';
@@ -59,7 +59,7 @@ class App extends Component {
           />
           <Route 
             path='/pirates' 
-            render={ (props) => <Pirate {...props} details={this.state.pirates} /> } />
+            render={ (props) => <Pirates {...props} details={this.state.pirates} /> } />
           <Route render={function(){
             return <h2>Not found</h2>
           }} />
