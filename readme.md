@@ -287,6 +287,17 @@ addPirate(pirate) {
 }
 ```
 
+```js
+if (isLoading) {
+  return (
+    <React.Fragment>
+    <Header headline="Loading!" />
+    <p>Loading ...</p>
+    </React.Fragment>
+    ) 
+  }
+```
+
 
 
 <!-- .then(response => this.setState({ pirates: response.data })) -->

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Pirate from './Pirate'
 import Header from './Header'
 import PirateForm from './PirateForm'
-
 import axios from 'axios';
 
 class App extends Component {
@@ -49,7 +48,7 @@ class App extends Component {
       }
       
       return (
-        <React.Fragment>
+        <div className="App">
         <Header headline="Pirates!" />
         
         {
@@ -61,10 +60,11 @@ class App extends Component {
             removePirate={this.removePirate} />)
           }
           
-          <PirateForm loadSamples={this.loadSamples} addPirate={this.addPirate} />
-          </React.Fragment>
+          <PirateForm addPirate={this.addPirate} />
+          </div>
           );
         }
+        
         
         removePirate(key){
           const pirates = { ...this.state.pirates }
@@ -74,42 +74,13 @@ class App extends Component {
           .then(this.setState({pirates}))
         }
         
-        // addPirate(pirate) {
-        //   this.setState({ isLoading: true });
-        //   const locPirates = { ...this.state.pirates }
-        //   axios.post('http://localhost:3005/api/pirates/', pirate)
-        //   .then(response => {
-        //     locPirates[pirate] = response.data
-        //     this.setState({ pirates: locPirates, isLoading: false })
-        //   })
-        // }
-  
         addPirate(pirate) {
-          this.setState({ isLoading: true });
-          const locPirates = { ...this.state.pirates }
-          // console.log(locPirates)
-          fetch('http://localhost:3005/api/pirates/',
-          {
-            method: 'post',
-            headers: {
-              "Content-Type": "application/json; charset=utf-8",
-              // "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: JSON.stringify(pirate)
-          })
-          .then(response => response.json()
-          .then(data => ({
-            data: data,
-            status: response.status
-          }))
-            .then(response => {
-              locPirates[pirate] = response.data;
-              this.setState({ pirates: locPirates, isLoading: false })
-            })
-          )
+          const pirates = { ...this.state.pirates }
+          axios.post('http://localhost:3005/api/pirates/', pirate)
+          .then ( pirates[pirate] = pirate )
+          .then(this.setState({ pirates: pirates }))
         }
         
       }
       
       export default App;
-      
