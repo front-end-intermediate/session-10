@@ -582,7 +582,7 @@ const pirate = props.details.filter(
     <ul>
     <li>{pirate[0].name}</li>
     </ul>
-    <Link to='/'>Back</Link>
+    <Link to='/pirates'>Back</Link>
     </div>
     )
   }
@@ -626,6 +626,125 @@ render(){
       </div>
       )
     }
+```
+
+We need to use the routing props to access the match.params.number.
+
+Before we can do that we will edit the component from one that only returns JSX:
+
+```js
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+const PirateDetail = (props) => (
+  <div className='pirate'>
+  <ul>
+    <li>Pirate Detail</li>
+  </ul>
+  <Link to='/pirates'>Back</Link>
+  </div>
+)
+
+export default PirateDetail
+```
+
+To a function that has a return:
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom'
+
+const PirateDetail = (props) => {
+  
+  return (
+
+    )
+  }
+  
+export default PirateDetail
+```
+
+We extract the url parameters:
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom'
+
+const PirateDetail = (props) => {
+
+  const pirate = props.details.filter(
+  p => p._id === props.match.params.number
+  )
+  
+  return (
+    <div className='pirate'>
+      <ul>
+        <li>Pirate Detail</li>
+      </ul>
+      <Link to='/pirates'>Back</Link>
+    </div>
+    )
+  }
+  
+export default PirateDetail
+```
+
+The filter returns an arrary of one item.
+
+`console.log(pirate)`
+
+`console.log(pirate[0])`
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom'
+
+const PirateDetail = (props) => {
+
+const pirate = props.details.filter(
+  p => p._id === props.match.params.number
+  )
+  
+  return (
+    <div className='pirate'>
+    <ul>
+    <li>Name: {pirate[0].name}</li>
+    <li>Vessel: {pirate[0].vessel}</li>
+    <li>Weapon: {pirate[0].weapon}</li>
+    </ul>
+    <Link to='/pirates'>Back</Link>
+    </div>
+    )
+  }
+  
+  export default PirateDetail
+```
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom'
+
+const PirateDetail = (props) => {
+
+const pirate = props.details.filter(
+  p => p._id === props.match.params.number
+  )
+  
+  const pirateDeet = pirate[0];
+  
+  return (
+    <div className='pirate'>
+    <ul>
+    <li>Name: {pirateDeet.name}</li>
+    <li>Vessel: {pirateDeet.vessel}</li>
+    <li>Weapon: {pirateDeet.weapon}</li>
+    </ul>
+    <Link to='/pirates'>Back</Link>
+    </div>
+    )
+  }
+  
+  export default PirateDetail
 ```
 
 ## Notes
