@@ -322,6 +322,32 @@ ReactDOM.render((
 ), document.getElementById('root'))
 ```
 
+## Main Routes
+
+```js
+import React from 'react';
+import {NavLink} from 'react-router-dom';
+import '../assets/css/Nav.css'
+
+function Nav(){
+  return (
+    <ul className="nav">
+      <li>
+        <NavLink exact to='/'>Home</NavLink>
+      </li>
+      <li>
+        <NavLink to='/add'>Add Pirate</NavLink>
+      </li>
+      <li>
+        <NavLink to='/pirates'>Pirates</NavLink>
+      </li>
+    </ul>
+  )
+}
+
+export default Nav
+```
+
 Looking at the structure of components, it appears that we will have to use `App` as a branching point for our route.
 
 `App.js`:
