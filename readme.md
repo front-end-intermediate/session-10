@@ -263,7 +263,7 @@ import { Link } from 'react-router-dom';
 
 const PirateDetail = () => (
   <React.Fragment>
-  <p>PirateDetail</p>
+  <h2>PirateDetail</h2>
   <Link to='/pirates'>Back</Link>
   </React.Fragment>
   )
@@ -327,7 +327,7 @@ Make this change to `Pirate.css`:
 }
 ```
 
-OUr links are referencing the `PirateDetail` component. Let's try fleshing out the detail view.
+OUr links are referencing the `PirateDetail` component but with the static content. Let's make it dynamic.
 
 Edit `PirateDetail`:
 
@@ -484,6 +484,8 @@ const pirate = props.details.filter(
   
   export default PirateDetail
 ```
+
+REFRESHING PROBLEMS! Need a central data store.
 
 ## Real Time Data
 
