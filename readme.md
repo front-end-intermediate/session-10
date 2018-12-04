@@ -201,6 +201,9 @@ return(
     <Route exact path='/' component={Home} />
     <Route exact path='/pirates' component={Pirates} />
     <Route path='/pirates/:number' component={PirateDetail} />
+    <Route render={ () => {
+      return <h2>Not found</h2>
+    }} />
   </Switch>
     </React.Fragment>
   </Route>
