@@ -1,57 +1,35 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
-import Pirate from './Pirate'
-import Header from './Header'
-import PirateForm from './PirateForm'
-import piratesFile from '../data/sample-pirates-object';
-import Nav from './Nav';
-import Home from './Home';
+import { Route, Switch } from 'react-router-dom'
 
-import axios from 'axios';
+import Pirates from './Pirates';
+import PirateDetail from './PirateDetail';
+import Header from './Header'
+import Home from './Home';
+import Nav from './Nav';
+
+import base from '../base';
 
 class App extends Component {
   
   constructor() {
     super();
-    this.addPirate = this.addPirate.bind(this);
-    this.loadSamples = this.loadSamples.bind(this);
-    this.removePirate = this.removePirate.bind(this);
     this.state = {
-      pirates: {},
-      isLoading: true,
-      error: null
+      pirates: {}
     }
   }
-  
+
   componentDidMount(){
-    this.setState({ isLoading: true });
-    axios.get('http://localhost:3005/api/pirates')
-    .then(response => this.setState({
-      pirates: response.data,
-      isLoading: false
-    }))
-    .catch(error => this.setState({
-      error,
-      isLoading: false
-    }));
+    this.ref = base.syncState(`daniel-deverell-pirates/pirates`, {
+      context: this,
+      state: 'pirates'
+    })
+  }
+
+  componentWillUmount(){
+    base.removeBinding(this.ref)
   }
   
   render() {
-    
-    const { isLoading, error } = this.state;
-    
-    if (error) {
-      return <p>{error.message}</p>;
-    }
-    
-    if (isLoading) {
-      return (
-        <React.Fragment>
-        <Header headline="Loading Pirates!" />
-        <p>Loading ...</p>
-        </React.Fragment>
-        ) 
-      }
       
       return(
         <Route>
@@ -60,35 +38,22 @@ class App extends Component {
         <Nav />
         <Switch>
         <Route exact path='/' component={Home} />
-        <Route exact path='/pirates' component={Pirates} />
-        <Route path='/pirates/:number' component={PirateDetail} />
-      </Switch>
+        
+        <Route exact path='/pirates' render={(props) => (
+          <Pirates {...props} details={this.state.pirates}  />
+          )
+        } />
+        
+        <Route path='/pirates/:number' render={(props) => (
+          <PirateDetail {...props} details={this.state.pirates} />
+          )
+        } />
+        
+        </Switch>
         </React.Fragment>
-      </Route>
+        </Route>
         )
       }
-      
-      loadSamples() {
-        this.setState({
-          pirates: piratesFile
-        })
-      }
-      
-      removePirate(key){
-        const pirates = { ...this.state.pirates }
-        let pirateDel = this.state.pirates[key]._id
-        axios.get(`http://localhost:3005/api/pirates/${pirateDel}`)
-        .then(delete pirates[key])
-        .then(this.setState({pirates}))
-      }
-      
-      addPirate(pirate) {
-        const pirates = { ...this.state.pirates }
-        axios.post('http://localhost:3005/api/pirates/', pirate)
-        .then ( pirates[pirate] = pirate )
-        .then(this.setState({ pirates: pirates }))
-      }
-      
     }
     
     export default App;
