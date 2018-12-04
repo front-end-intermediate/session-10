@@ -29,13 +29,15 @@ class Pirates extends Component {
       <div className='pirate'>
       <ul>
       {
-        Object.keys(this.state.details).map( key => (
+            Object.keys(this.state.details).map(key => (
+              
           <Pirate key={key}
           index={key}
           details={this.state.details[key]}
           removePirate = {this.props.removePirate}
           />
-          ))
+            )
+            )
         }
         </ul>
         </div>
