@@ -28,19 +28,16 @@ class PirateDetail extends React.Component {
     const pirate = this.state.details.filter(
       key => key._id === this.props.match.params.number
     )
-    const pirateDeet = pirate[0];
-    // console.log(this.state.details.map(key => key.name ))
-    console.log(pirateDeet)
-
-    
+    const pirateDeet = { ...pirate[0] };
 
     return (
+
       <div className='pirate'>
-      {/* <ul>
+      <ul>
       <li>Name: {pirateDeet.name}</li>
       <li>Vessel: {pirateDeet.vessel}</li>
       <li>Weapon: {pirateDeet.weapon}</li>
-      </ul> */}
+      </ul>
       <Link to='/pirates'>Back</Link>
       </div>
       )
