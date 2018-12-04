@@ -4,6 +4,9 @@ import PirateDetail from './PirateDetail';
 
 import Header from './Header'
 import Home from './Home';
+import base from '../base'
+
+
 
 // import PirateForm from './PirateForm';
 import Nav from './Nav';
@@ -19,23 +22,40 @@ class App extends Component {
     this.removePirate = this.removePirate.bind(this);
     this.state = {
       pirates: {},
-      isLoading: true,
+      isLoading: false,
       error: null
     }
   }
-  
-  componentDidMount(){
-    this.setState({ isLoading: true });
-    axios.get('http://localhost:3005/api/pirates')
-    .then(response => this.setState({
-      pirates: response.data,
-      isLoading: false
-    }))
-    .catch(error => this.setState({
-      error,
-      isLoading: false
-    }));
+
+
+  componentWillMount(){
+    this.ref = base.syncState(`daniel-deverell-pirates/pirates`, {
+      context: this,
+      state: 'pirates'
+    })
   }
+
+  componentWillUmount(){
+    base.removeBinding(this.ref)
+  }
+
+  // componentDidMount(){
+  //   this.setState({ isLoading: true });
+  //   axios.get('http://localhost:3005/api/pirates')
+  //   // this.ref = base.syncState(`daniel-deverell-pirates/pirates`, {
+  //   //   context: this,
+  //   //   state: 'pirates'
+  //   // })
+  //   // this.setState({ isLoading: false })
+  //   .then(response => this.setState({
+  //     pirates: response.data,
+  //     isLoading: false
+  //   }))
+  //   .catch(error => this.setState({
+  //     error,
+  //     isLoading: false
+  //   }));
+  // }
   
   render() {
     
