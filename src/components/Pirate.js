@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import '../assets/css/Pirate.css'
 
 class Pirate extends Component {
   render(){
     const { details } = this.props;
     return (
-      <div className='pirate'>
-      <ul>
-        <li>{details.name}</li>
-        <li>{details.weapon}</li>
-        <li>{details.vessel}</li>
-        <li><button onClick={() => this.props.removePirate(this.props.index)}>✖︎</button></li>
-      </ul>
-      </div>
+      <React.Fragment>
+          <Link to={`pirates/${details._id}`}>{details.name}</Link> 
+          <li><button onClick={() => this.props.removePirate(this.props.index)}>✖︎</button></li>
+        </React.Fragment>
       )
     }
   }

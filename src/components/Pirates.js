@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import Pirate from './Pirate'
 import '../assets/css/Pirate.css';
 
-class Pirate extends Component {
+class Pirates extends Component {
   
   render(){
-    const { details } = this.props.details;
     return (
       <div className='pirate'>
       <ul>
-
         {
-          this.props.details.map( p => (
-            <li key={p._id}>
-              <Link to={`pirates/${p._id}`}>{p.name}</Link>
-            </li>
+          Object.keys(this.props.details).map( key => (
+            <Pirate key={key}
+            index={key}
+            details={this.props.details[key]}
+            removePirate = {this.props.removePirate}
+            />
           ))
         }
         </ul>
@@ -22,4 +22,4 @@ class Pirate extends Component {
       )
     }
   }
-  export default Pirate;
+  export default Pirates;

@@ -747,19 +747,412 @@ const pirate = props.details.filter(
   export default PirateDetail
 ```
 
-## Notes
+## Real Time Data
 
-`<React.Fragment>`
+Demo using db on Firebase. Firebase is like one big object.
+
+1. Create a free account at [Firebase](https://firebase.com/)
+1. Create a new project called `<firstname>-<lastname>-pirates`
+1. Create Project
+1. Go to the empty database (left hand menu)
+
+Click on Create Database at the top and choose `Start in Test Mode`.
+
+This changes the defaults to:
+
+```js
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write;
+    }
+  }
+}
+```
+
+in src create `base.js`
+
+```js
+import Rebase from 're-base'
+
+const base = Rebase.createClass({
+
+})
+
+export default base;
+```
+
+[Rebase](https://www.npmjs.com/package/rebase) is a utility that we are going to use to connect to Firebase and bind the data so whenever your data changes, your state will be updated.
+
+`npm install re-base@2.2.0 --save`
+
+### Add domain, database URL, API key
+
+In Firebase click on Project Overview > Add Firebase to your web app.
+
+Extract the following information:
+
+```js
+apiKey: "XXXXXXXX",
+authDomain: "XXXXXXXX",
+databaseURL: "XXXXXXXXX",
+```
+
+* e.g. in `base.js`:
 
 ```js
 import Rebase from 're-base';
 
 const base = Rebase.createClass({
-  apiKey: 'AIzaSyAHnKw63CUBAqSuCREgils_waYJ0qwpGiU',
-  authDomain: 'daniel-deverell-pirates.firebaseapp.com',
-  databaseURL: 'https://daniel-deverell-pirates.firebaseio.com'
+  apiKey: "AIzaSyCqEN7JHnqqHFqRE6Tc0mAgAQ1KyoCgSHo",
+  authDomain: "test-pirates-b5b9a.firebaseapp.com",
+  databaseURL: "https://test-pirates-b5b9a.firebaseio.com",
+  projectId: "test-pirates-b5b9a",
+  storageBucket: "test-pirates-b5b9a.appspot.com",
+  messagingSenderId: "758151016053"
 });
 
 export default base;
 ```
+
+* `App.js`:
+
+`import base from './base'`
+
+## React Component Lifecycle
+
+[Documentation](https://reactjs.org/docs/react-component.html).
+
+* component will mount - hooks into component before it is displayed.
+
+* `App`:
+
+```js
+componentWillMount(){
+  this.ref = base.syncState(`daniel-deverell-pirates/pirates`, {
+    context: this,
+    state: 'pirates'
+  })
+}
+```
+
+Note the path and the object.
+
+```js
+componentWillUmount(){
+  base.removeBinding(this.ref)
+}
+```
+
+Entire App.js:
+
+```js
+import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom'
+
+import Pirates from './Pirates';
+import PirateDetail from './PirateDetail';
+import Header from './Header'
+import Home from './Home';
+import Nav from './Nav';
+
+import base from '../base';
+
+class App extends Component {
+  
+  constructor() {
+    super();
+    this.state = {
+      pirates: {}
+    }
+  }
+
+  componentDidMount(){
+    this.ref = base.syncState(`daniel-deverell-pirates/pirates`, {
+      context: this,
+      state: 'pirates'
+    })
+  }
+
+  componentWillUmount(){
+    base.removeBinding(this.ref)
+  }
+  
+  render() {
+      
+      return(
+        <Route>
+        <React.Fragment>
+        <Header headline='Pirates!' />
+        <Nav />
+        <Switch>
+        <Route exact path='/' component={Home} />
+        
+        <Route exact path='/pirates' render={(props) => (
+          <Pirates {...props} details={this.state.pirates}  />
+          )
+        } />
+        
+        <Route path='/pirates/:number' render={(props) => (
+          <PirateDetail {...props} details={this.state.pirates} />
+          )
+        } />
+        
+        </Switch>
+        </React.Fragment>
+        </Route>
+        )
+      }
+    }
+    
+    export default App;
+```
+
+Pirates.js:
+
+```js
+import React, { Component } from 'react';
+import Pirate from './Pirate'
+import '../assets/css/Pirate.css';
+
+class Pirates extends Component {
+  
+  render(){
+    return (
+      <div className='pirate'>
+      <ul>
+        {
+          Object.keys(this.props.details).map( key => (
+            <Pirate key={key}
+            details={this.props.details[key]}
+            />
+          ))
+        }
+        </ul>
+      </div>
+      )
+    }
+  }
+  export default Pirates;
+  ```
+
+
+
+To delete a pirate we need to accomodate Firebase:
+
+```js
+removePirate(key){
+  const pirates = {...this.state.pirates}
+  pirates[key] = null
+  this.setState({pirates})
+}
+```
+
+Add support for deletion.
+
+```js
+import React, { Component } from 'react';
+import Pirates from './Pirates';
+import PirateDetail from './PirateDetail';
+
+import Header from './Header'
+import Home from './Home';
+import base from '../base';
+import Nav from './Nav';
+import { Route, Switch } from 'react-router-dom'
+
+class App extends Component {
+  
+  constructor() {
+    super();
+    this.removePirate = this.removePirate.bind(this);
+    this.state = {
+      pirates: {}
+    }
+  }
+
+  componentDidMount(){
+    this.ref = base.syncState(`daniel-deverell-pirates/pirates`, {
+      context: this,
+      state: 'pirates'
+    })
+  }
+
+  componentWillUmount(){
+    base.removeBinding(this.ref)
+  }
+
+  removePirate(key){
+    console.log(key)
+    const pirates = {...this.state.pirates}
+    pirates[key] = null
+    this.setState({pirates})
+  }
+  
+  render() {
+      
+      return(
+        <Route>
+        <React.Fragment>
+        <Header headline='Pirates!' />
+        <Nav />
+        <Switch>
+        <Route exact path='/' component={Home} />
+        
+        <Route exact path='/pirates' render={(props) => (
+          <Pirates {...props} details={this.state.pirates}
+          removePirate  = {this.removePirate}  />
+          )
+        } />
+        
+        <Route path='/pirates/:number' render={(props) => (
+          <PirateDetail {...props} details={this.state.pirates} />
+          )
+        } />
+        
+        </Switch>
+        </React.Fragment>
+        </Route>
+        )
+      }
+    }
+    
+    export default App;
+```
+
+Pirates.js
+
+```js
+import React, { Component } from 'react';
+import Pirate from './Pirate'
+import '../assets/css/Pirate.css';
+
+class Pirates extends Component {
+  
+  render(){
+    return (
+      <div className='pirate'>
+      <ul>
+        {
+          Object.keys(this.props.details).map( key => (
+            <Pirate key={key}
+            index={key}
+            details={this.props.details[key]}
+            removePirate = {this.props.removePirate}
+            />
+          ))
+        }
+        </ul>
+      </div>
+      )
+    }
+  }
+  export default Pirates;
+  ```
+
+  Pirate.js
+
+  ```js
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import '../assets/css/Pirate.css'
+
+class Pirate extends Component {
+  render(){
+    const { details } = this.props;
+    return (
+      <React.Fragment>
+          <Link to={`pirates/${details._id}`}>{details.name}</Link> 
+          <li><button onClick={() => this.props.removePirate(this.props.index)}>✖︎</button></li>
+        </React.Fragment>
+      )
+    }
+  }
+  export default Pirate;
+```
+
+PiratesDetails
+
+```js
+import React from 'react';
+import { Link } from 'react-router-dom'
+
+const PirateDetail = (props) => {
+
+const pirate = props.details.filter(
+  p => p._id === props.match.params.number
+  )
+  
+  const pirateDeet = pirate[0];
+  
+  return (
+    <div className='pirate'>
+    <ul>
+    <li>Name: {pirateDeet.name}</li>
+    <li>Vessel: {pirateDeet.vessel}</li>
+    <li>Weapon: {pirateDeet.weapon}</li>
+    </ul>
+    <Link to='/pirates'>Back</Link>
+    </div>
+    )
+  }
+  
+  export default PirateDetail
+  ```
+
+Test in the browser. Check that the Database > Rules are set properly:
+
+```js
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+```
+
+## Bi-Directional Data
+
+We will now use `AddPirateForm` to allow the user to edit the pirates from a single location.
+
+Set a route 
+
+```
+import React from 'react';
+import {NavLink} from 'react-router-dom';
+import '../assets/css/Nav.css'
+
+function Nav(){
+  return (
+    <ul className="nav">
+      <li>
+        <NavLink exact to='/'>Home</NavLink>
+      </li>
+      <li>
+        <NavLink to='/add'>Add Pirate</NavLink>
+      </li>
+      <li>
+        <NavLink to='/pirates'>Pirates</NavLink>
+      </li>
+    </ul>
+  )
+}
+
+export default Nav
+```
+
+Add it to App:
+
+```
+import AddPirateForm from './AddPirateForm';
+...
+<Route path='/add' component={AddPirateForm} />
+```
+
+```
+<Route path='/add' render={ (props) => (
+  <AddPirateForm {...props} /> )} />
+```
+
+Make the state available to the `PirateForm`
 

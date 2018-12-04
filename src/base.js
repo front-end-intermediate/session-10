@@ -1,6 +1,4 @@
-var Rebase = require('re-base');
-var firebase = require('firebase/app');
-var database = require('firebase/database');
+import Rebase from 're-base';
 
 const base = Rebase.createClass({
   apiKey: "AIzaSyCqEN7JHnqqHFqRE6Tc0mAgAQ1KyoCgSHo",
@@ -10,7 +8,5 @@ const base = Rebase.createClass({
   storageBucket: "test-pirates-b5b9a.appspot.com",
   messagingSenderId: "758151016053"
 });
-
-
 
 export default base;
