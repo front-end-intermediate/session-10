@@ -17,6 +17,10 @@ h1 {
     line-height: 1.1;
 }
 
+h2 {
+    font-family: 'Pirata One', cursive;
+}
+
 .logo {
     animation: App-logo-spin infinite 20s linear;
     height: 230px;

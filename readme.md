@@ -22,7 +22,7 @@ Review and test the loading state.
 
 We will add routing to our current project. The goal is to create a master / detail view for our pirates.
 
-Install
+Install the router:
 
 `npm install --save react-router-dom`
 
@@ -40,12 +40,13 @@ ReactDOM.render((
 
 ## Main Routes
 
-Nav.js:
+Create a navbar for top level routing. We will use `NavLink` to take advantage of the `active` states it provides.
+
+`Nav.js`:
 
 ```js
 import React from 'react';
 import {NavLink} from 'react-router-dom';
-// import '../assets/css/Nav.css'
 
 function Nav(){
   return (
@@ -66,16 +67,27 @@ function Nav(){
 export default Nav
 ```
 
-Import to App.js and add it below the header in the render method.
+Import it in `App.js` and add it below the header in the render method.
 
-Add Nav.css
+`App.js`:
+
+```js
+import Nav from './Nav';
+...
+return (
+  <div className="App">
+    <Header headline="Pirates!" />
+    <Nav />
+```
+
+Add `Nav.css` to `assets/css`:
 
 ```css
 .nav {
   display: flex;
   list-style: none;
   background: #007eb6;
-  padding: 0.5rem;
+  padding: 0.25rem;
   margin: 0;
   border: 4px solid #007eb6;
   font-family: 'Trade Winds', cursive;
@@ -84,7 +96,8 @@ Add Nav.css
 .nav a {
   color: #fff;
   text-decoration: none;
-  padding: 0.5rem;
+  padding: 0.25rem  0.5rem;
+  margin-right: 0.5rem;
 }
 
 .nav a.active {
@@ -93,7 +106,13 @@ Add Nav.css
 }
 ```
 
-Home.js
+Import it into `Nav.js`:
+
+`import '../assets/css/Nav.css';`
+
+Create a component for the root route.
+
+`Home.js`:
 
 ```js
 import React from 'react';
@@ -102,7 +121,7 @@ import { Link } from 'react-router-dom';
 const Home = () => {
   return (
     <div className="home">
-      <h1>Home</h1>
+      <h2>Home</h2>
       <Link to='/pirates'>See em All</Link>
     </div>
     )
@@ -111,11 +130,17 @@ const Home = () => {
 export default Home;
 ```
 
-Import Home into App.js.
+Import `Home` into `App.js`.
 
- App.js
+`import Home from './Home';`
+
+## Routing and Switching
+
+`App.js`:
 
  ```js
+import { Route, Switch } from 'react-router-dom';
+...
 return(
   <Route>
     <React.Fragment>
@@ -123,11 +148,16 @@ return(
     <Nav />
     <Switch>
       <Route exact path='/' component={Home} />
+      <Route render={() => {
+        return <h2>Not found</h2>
+      }} />
     </Switch>
     </React.Fragment>
   </Route>
 )
 ```
+
+Note that we can use `<Route render={}>` instead of specifying a component.
 
  <!-- ```js
  return(
@@ -154,10 +184,11 @@ return(
 }
 ``` -->
 
+Expand the routes to include 
+
 `App.js`:
 
 ```js
-import { Switch, Route } from 'react-router-dom';
 import Pirates from './components/Pirates';
 import PirateDetail from './components/PirateDetail';
 ...

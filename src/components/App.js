@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom';
 import Pirate from './Pirate'
 import Header from './Header'
 import PirateForm from './PirateForm'
 import piratesFile from '../data/sample-pirates-object';
+import Nav from './Nav';
+import Home from './Home';
 
 import axios from 'axios';
 
 class App extends Component {
-
+  
   constructor() {
     super();
     this.addPirate = this.addPirate.bind(this);
@@ -19,7 +22,7 @@ class App extends Component {
       error: null
     }
   }
-
+  
   componentDidMount(){
     this.setState({ isLoading: true });
     axios.get('http://localhost:3005/api/pirates')
@@ -32,15 +35,15 @@ class App extends Component {
       isLoading: false
     }));
   }
-
+  
   render() {
-
+    
     const { isLoading, error } = this.state;
-
+    
     if (error) {
       return <p>{error.message}</p>;
     }
-  
+    
     if (isLoading) {
       return (
         <React.Fragment>
@@ -49,46 +52,43 @@ class App extends Component {
         </React.Fragment>
         ) 
       }
+      
+      return(
+        <Route>
+        <React.Fragment>
+        <Header headline='Pirates!' />
+        <Nav />
+        <Switch>
+        <Route exact path='/' component={Home} />
+        <Route exact path='/pirates' component={Pirates} />
+        <Route path='/pirates/:number' component={PirateDetail} />
+      </Switch>
+        </React.Fragment>
+      </Route>
+        )
+      }
+      
+      loadSamples() {
+        this.setState({
+          pirates: piratesFile
+        })
+      }
+      
+      removePirate(key){
+        const pirates = { ...this.state.pirates }
+        let pirateDel = this.state.pirates[key]._id
+        axios.get(`http://localhost:3005/api/pirates/${pirateDel}`)
+        .then(delete pirates[key])
+        .then(this.setState({pirates}))
+      }
+      
+      addPirate(pirate) {
+        const pirates = { ...this.state.pirates }
+        axios.post('http://localhost:3005/api/pirates/', pirate)
+        .then ( pirates[pirate] = pirate )
+        .then(this.setState({ pirates: pirates }))
+      }
+      
+    }
     
-    return (
-      <div className="App">
-        <Header headline="Pirates!" />
-        
-          {
-            Object.keys(this.state.pirates)
-            .map(key =>
-              <Pirate key={key}
-                index={key}
-                details={this.state.pirates[key]}
-                removePirate={this.removePirate} />)
-          }
-
-        <PirateForm loadSamples={this.loadSamples} addPirate={this.addPirate} />
-      </div>
-    );
-  }
-
-  loadSamples() {
-    this.setState({
-      pirates: piratesFile
-    })
-  }
-
-  removePirate(key){
-    const pirates = { ...this.state.pirates }
-    let pirateDel = this.state.pirates[key]._id
-    axios.get(`http://localhost:3005/api/pirates/${pirateDel}`)
-    .then(delete pirates[key])
-    .then(this.setState({pirates}))
-  }
-  
-  addPirate(pirate) {
-    const pirates = { ...this.state.pirates }
-    axios.post('http://localhost:3005/api/pirates/', pirate)
-    .then ( pirates[pirate] = pirate )
-    .then(this.setState({ pirates: pirates }))
-  }
-
-}
-
-export default App;
+    export default App;
