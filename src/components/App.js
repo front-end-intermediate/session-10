@@ -4,6 +4,8 @@ import Header from './Header'
 import PirateForm from './PirateForm'
 import piratesFile from '../data/sample-pirates-object';
 
+import base from '../base'
+
 import axios from 'axios';
 
 class App extends Component {
@@ -13,38 +15,25 @@ class App extends Component {
     this.addPirate = this.addPirate.bind(this);
     this.loadSamples = this.loadSamples.bind(this);
     this.removePirate = this.removePirate.bind(this);
+    this.updatePirate = this.updatePirate.bind(this);
     this.state = {
-      pirates: {},
-      isLoading: true,
-      error: null
+      pirates: {}
     }
   }
   
   componentDidMount(){
-    this.setState({ isLoading: true });
-    axios.get('http://localhost:3005/api/pirates')
-    .then(response => this.setState({
-      pirates: response.data,
-      isLoading: false
-    }))
-    .catch(error => this.setState({
-      error,
-      isLoading: false
-    }));
+    this.ref = base.syncState(`first-last-pirates/pirates`, {
+      context: this,
+      state: 'pirates'
+    })
+  }
+
+  componentWillUnmount() {
+    base.removeBinding(this.ref)
   }
   
   render() {
-    
-    const { isLoading, error } = this.state;
-    
-    if (error) {
-      return <p>{error.message}</p>;
-    }
-    
-    if (isLoading) {
-      return <p>Loading ...</p>;
-    }
-    
+        
     return (
       <div className="App">
       <Header headline="Pirates!" />
@@ -58,7 +47,11 @@ class App extends Component {
           removePirate={this.removePirate} />)
         }
         
-        <PirateForm loadSamples={this.loadSamples} addPirate={this.addPirate} />
+        <PirateForm
+          updatePirate={this.updatePirate}
+          pirates={this.state.pirates}
+          loadSamples={this.loadSamples}
+          addPirate={this.addPirate} />
         </div>
         );
       }
@@ -70,18 +63,22 @@ class App extends Component {
       }
       
       removePirate(key){
-        const pirates = { ...this.state.pirates }
-        let pirateDel = this.state.pirates[key]._id
-        axios.get(`http://localhost:3005/api/pirates/${pirateDel}`)
-        .then(delete pirates[key])
-        .then(this.setState({pirates}))
+        const newpirates = { ...this.state.pirates }
+        newpirates[key] = null;
+        this.setState({pirates: newpirates})
       }
       
       addPirate(pirate) {
         const pirates = { ...this.state.pirates }
-        axios.post('http://localhost:3005/api/pirates/', pirate)
-        .then ( pirates[pirate] = pirate )
-        .then(this.setState({ pirates: pirates }))
+        const timestamp = Date.now()
+        pirates[`pirate-${timestamp}`] = pirate
+        this.setState({ pirates })
+      }
+  
+      updatePirate(key, updatedPirate){
+        const pirates = {...this.state.pirates};
+        pirates[key] = updatedPirate;
+        this.setState({ pirates })
       }
       
     }
